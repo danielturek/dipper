@@ -10,16 +10,16 @@ ind <- 1:3;   nind<-length(ind);   first<-first[ind];   y<-y[ind,,drop=FALSE];  
 
 
 
-code_dipper <- modelCode({
+code_dipper <- nimbleCode({
     phi ~ dunif(0, 1)
     p ~ dunif(0, 1)
     for (i in 1:nind) {
         x[i, first[i]] <- 1
         for (t in (first[i] + 1):k) {
-            mu.x[i, t] <- phi * x[i, t-1]
-            mu.y[i, t] <- p * x[i, t]
-            x[i, t] ~ dbin(mu.x[i, t], 1)
-            y[i, t] ~ dbin(mu.y[i, t], 1)
+            mu_x[i, t] <- phi * x[i, t-1]
+            mu_y[i, t] <- p * x[i, t]
+            x[i, t] ~ dbin(mu_x[i, t], 1)
+            y[i, t] ~ dbin(mu_y[i, t], 1)
         }
     }
 })
@@ -29,7 +29,7 @@ inits     <- list(phi=0.6, p=0.9, x=x_init)
 
 
 
-code_dipperPH <- model_code({
+code_dipperPH <- nimbleCode({
     phi ~ dunif(0, 1)
     pmean ~ dunif(0, 1)
     plogitmean <- log(pmean/(1 - pmean))
@@ -40,10 +40,10 @@ code_dipperPH <- model_code({
         logit(p[i]) <- plogitmean + epsilon[i]
         x[i, first[i]] <- 1
         for (t in (first[i] + 1):k) {
-            mu.x[i, t] <- phi * x[i, t - 1]
-            mu.y[i, t] <- p[i] * x[i, t]
-            x[i, t] ~ dbin(mu.x[i, t], 1)
-            y[i, t] ~ dbin(mu.y[i, t], 1)
+            mu_x[i, t] <- phi * x[i, t - 1]
+            mu_y[i, t] <- p[i] * x[i, t]
+            x[i, t] ~ dbin(mu_x[i, t], 1)
+            y[i, t] ~ dbin(mu_y[i, t], 1)
         }
     }
 })
@@ -53,7 +53,7 @@ inits     <- list(phi=0.6, pmean=0.9, psigma=1, x=x_init)   ## WinBUGS sensitive
 
 
 
-code_dipperSeasonal <- modelCode({
+code_dipperSeasonal <- nimbleCode({
     phi_flood ~ dunif(0,1)
     phi_non   ~ dunif(0,1)
     p         ~ dunif(0,1)
